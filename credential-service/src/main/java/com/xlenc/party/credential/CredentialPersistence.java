@@ -1,15 +1,12 @@
 package com.xlenc.party.credential;
 
-import com.xlenc.party.credential.CredentialData;
 
 /**
  * User: Michael Williams
- * Date: 10/24/12
- * Time: 1:46 AM
+ * Date: 7/7/12
+ * Time: 10:17 PM
  */
-public interface CredentialService {
-
-    boolean authenticate(CredentialData credential);
+public interface CredentialPersistence {
 
     CredentialData add(CredentialData credential);
 
@@ -19,5 +16,4 @@ public interface CredentialService {
 
     int delete(String id);
 
-    CredentialData changePassword(CredentialData credential);
 }

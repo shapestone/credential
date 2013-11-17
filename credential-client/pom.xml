@@ -6,14 +6,8 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.xlenc</groupId>
-    <artifactId>credential</artifactId>
+    <artifactId>credential-client</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
 
-    <modules>
-        <module>credential-api</module>
-        <module>credential-client</module>
-        <module>credential-service</module>
-    </modules>
     
 </project>

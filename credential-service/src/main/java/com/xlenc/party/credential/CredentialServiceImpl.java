@@ -1,13 +1,10 @@
 package com.xlenc.party.credential;
 
-import com.xlenc.party.credential.CredentialData;
 import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import static org.apache.commons.lang.Validate.notEmpty;
-import static org.apache.commons.lang.Validate.notNull;
+import static org.apache.commons.lang3.Validate.notEmpty;
+import static org.apache.commons.lang3.Validate.notNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -15,13 +12,15 @@ import static org.slf4j.LoggerFactory.getLogger;
  * Date: 10/24/12
  * Time: 1:46 AM
  */
-@Service("credentialService")
 public class CredentialServiceImpl implements CredentialService {
 
     private static final Logger LOGGER = getLogger(CredentialServiceImpl.class);
 
-    @Autowired
     private CredentialPersistence credentialPersistence;
+
+    public CredentialServiceImpl(CredentialPersistence credentialPersistence) {
+        this.credentialPersistence = credentialPersistence;
+    }
 
     @Override
     public boolean authenticate(CredentialData credential) {
@@ -39,10 +38,9 @@ public class CredentialServiceImpl implements CredentialService {
 
         if (newCredential == null) { return false; }
 
-        final String readPassword = newCredential.getPassword();
+        final String hashedPassword = newCredential.getHashedPassword();
 
-        return readPassword != null && BCrypt.checkpw(password, readPassword);
-
+        return hashedPassword != null && BCrypt.checkpw(password, hashedPassword);
     }
 
     @Override
@@ -59,15 +57,15 @@ public class CredentialServiceImpl implements CredentialService {
 
         CredentialData newCredential = null;
         try {
-            final String hashpwd = BCrypt.hashpw(password, BCrypt.gensalt());
-            credential.setHashedPasswrod(hashpwd);
+            final String hashPwd = BCrypt.hashpw(password, BCrypt.gensalt());
+            credential.setHashedPassword(hashPwd);
 
             newCredential = credentialPersistence.add(credential);
         } catch (Exception e) {
             LOGGER.error("Exception Caught: ", e);
         } finally {
             if (newCredential != null) {
-                newCredential.setHashedPasswrod(null);
+                newCredential.setHashedPassword(null);
                 newCredential.setPassword(null);
             }
         }
@@ -87,7 +85,6 @@ public class CredentialServiceImpl implements CredentialService {
         notEmpty(password, "Username cannot be empty.");
 
         throw new UnsupportedOperationException();
-
     }
 
     @Override

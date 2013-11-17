@@ -2,7 +2,6 @@ package com.xlenc.party.credential;
 
 import com.google.code.morphia.annotations.*;
 import lombok.Data;
-import org.bson.types.ObjectId;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 import java.util.List;
@@ -17,16 +16,15 @@ public @Data
 class CredentialData {
 
     @Id
-    @JsonIgnore
-    private ObjectId objectId;
-    @Transient
     private String id;
+    @Indexed(unique = true)
     @Property("username")
     private String username;
     @Transient
     private String password;
+    @JsonIgnore
     @Property("password")
-    private String hashedPasswrod;
+    private String hashedPassword;
     @Property("status")
     private String status;
     @Property("verification_token")
@@ -39,27 +37,13 @@ class CredentialData {
     public CredentialData() {
     }
 
-    public CredentialData(String username) {
+    public CredentialData(final String username) {
         this.username = username;
     }
 
-    public CredentialData(String username, String password) {
+    public CredentialData(final String username, final String password) {
         this.username = username;
         this.password = password;
-    }
-
-    @PrePersist
-    private void prePersist() {
-        if (id != null) {
-            this.objectId = new ObjectId(id);
-        }
-    }
-
-    @PostLoad
-    private void postLoad() {
-        if (objectId != null) {
-            this.id = objectId.toString();
-        }
     }
 
 }
