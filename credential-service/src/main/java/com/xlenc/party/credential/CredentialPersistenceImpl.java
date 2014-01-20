@@ -1,9 +1,11 @@
 package com.xlenc.party.credential;
 
-import com.google.code.morphia.Key;
 import com.google.code.morphia.Morphia;
 import com.google.code.morphia.dao.BasicDAO;
 import com.google.code.morphia.mapping.Mapper;
+import com.google.code.morphia.query.Query;
+import com.google.code.morphia.query.UpdateOperations;
+import com.google.code.morphia.query.UpdateResults;
 import com.mongodb.Mongo;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
@@ -20,11 +22,9 @@ public class CredentialPersistenceImpl extends BasicDAO<CredentialData, Object> 
         super(mongo, morphia, databaseName);
     }
 
-    public CredentialData add(CredentialData credentialData) {
+    public CredentialData addCredential(CredentialData credentialData) {
         credentialData.setId(new ObjectId().toString());
-        final Key<CredentialData> newCredential = super.save(credentialData, WriteConcern.SAFE);
-        Object id = newCredential.getId();
-        credentialData.setId(id.toString());
+        super.save(credentialData, WriteConcern.SAFE);
         return credentialData;
     }
 
@@ -37,10 +37,33 @@ public class CredentialPersistenceImpl extends BasicDAO<CredentialData, Object> 
     }
 
     public int delete(String id) {
-        CredentialData credential = new CredentialData();
+        final CredentialData credential = new CredentialData();
         credential.setId(id);
-        WriteResult delete = super.delete(credential);
+        final WriteResult delete = super.delete(credential);
         return delete.getN();
+    }
+
+    public CredentialData findByExternalKeyValue(String name, String id) {
+        Query<CredentialData> query = super.createQuery();
+        query.and(
+            query.criteria("external_identifiers.name").equal(name),
+            query.criteria("external_identifiers.id").equal(id)
+        );
+        return query.get();
+    }
+
+    @Override
+    public int updateCredential(CredentialData credential) {
+        final UpdateOperations<CredentialData> updateOperations = super.createUpdateOperations();
+        updateOperations.set("username", credential.getUsername());
+        updateOperations.set("hashedPassword", credential.getHashedPassword());
+        Query<CredentialData> query = super.createQuery();
+        query.and(
+            query.criteria("_id").equal(credential.getId()),
+            query.criteria("version").equal(credential.getVersion())
+        );
+        UpdateResults<CredentialData> update = super.update(query, updateOperations);
+        return update.getUpdatedCount();
     }
 
 }

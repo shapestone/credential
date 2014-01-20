@@ -13,7 +13,7 @@ import com.yammer.dropwizard.config.Environment;
  * Date: 11/14/13
  * Time: 1:15 AM
  */
-public class CredentialRestService extends Service<CredentialServiceConfiguration> {
+public class CredentialServer extends Service<CredentialServiceConfiguration> {
 
     @Override
     public void initialize(Bootstrap<CredentialServiceConfiguration> bootstrap) {
@@ -44,7 +44,7 @@ public class CredentialRestService extends Service<CredentialServiceConfiguratio
     }
 
     public static void main(String[] args) throws Exception {
-        new CredentialRestService().run(args);
+        new CredentialServer().run(args);
     }
 
 }

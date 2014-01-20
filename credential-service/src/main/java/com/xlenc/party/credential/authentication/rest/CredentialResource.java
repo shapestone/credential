@@ -23,7 +23,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Path("/credentials")
 public class CredentialResource {
 
-    private static final Logger LOGGER = getLogger(CredentialResource.class);
+    private static final Logger log = getLogger(CredentialResource.class);
 
     private CredentialService credentialService;
 
@@ -40,7 +40,7 @@ public class CredentialResource {
     }
 
     @POST
-    @Path("/authenticate")
+    @Path("/credential/authenticate")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response authenticate(final CredentialData credential) {
@@ -50,7 +50,7 @@ public class CredentialResource {
         try {
             isAuthenticated = credentialService.authenticate(credential);
         } catch (Exception e) {
-            LOGGER.error("Exception Caught: ", e);
+            log.error("Exception Caught: ", e);
             message = e.getMessage();
         }
 
@@ -69,11 +69,41 @@ public class CredentialResource {
     }
 
     @PUT
+    @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateCredential(final CredentialData credential) {
-        final CredentialData addedCredential = credentialService.changePassword(credential);
-        return Response.ok(addedCredential).build();
+    public Response updateCredential(@PathParam("id") final String id, final CredentialData credential) {
+        Response response;
+        try {
+
+            if (credential.getId() == null) {
+                credential.setId(id);
+            }
+
+            final int affected = credentialService.updateCredential(credential);
+
+            final Map<String, Object> map = new HashMap<String, Object>() {{
+                put("affected", affected);
+            }};
+            response = Response.ok(map).build();
+        } catch (Exception e) {
+            log.debug("Exception Caught", e);
+            final String message = e.getMessage();
+            final Map<String, Object> errResponse = new HashMap<String, Object>() {{
+                put("message", message);
+            }};
+            response = Response.status(Response.Status.BAD_REQUEST).entity(errResponse).build();
+        }
+        return response;
+    }
+
+    @GET
+    @Path("/credential/external-id/{name}/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public  Response getCredentialByExternalId(@PathParam("name") String name, @PathParam("id") String id) {
+        final CredentialData addedCredential = credentialService.findByExternalKeyValue(name, id);
+        return status(OK).entity(addedCredential).build();
     }
 
 }

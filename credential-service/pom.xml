@@ -9,7 +9,9 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
+        <jdk.version>1.7</jdk.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <cglib.version>2.2.2</cglib.version>
         <testng.version>4.8.2</testng.version>
         <jersey.version>1.14</jersey.version>
@@ -17,7 +19,7 @@
         <logback.version>1.0.7</logback.version>
         <log4j.version>1.2.17</log4j.version>
         <mockito.version>1.9.0</mockito.version>
-        <morphia.version>0.99</morphia.version>
+        <morphia.version>0.99.1-SNAPSHOT</morphia.version>
         <jbcrypt.version>0.3m</jbcrypt.version>
     </properties>
 
@@ -80,6 +82,12 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-examples</artifactId>
             <version>${logback.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Other -->
@@ -132,12 +140,29 @@
             <groupId>commons-validator</groupId>
             <artifactId>commons-validator</artifactId>
             <version>1.3.1</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-collections</artifactId>
+                    <groupId>commons-collections</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>edu.vt.middleware</groupId>
             <artifactId>vt-password</artifactId>
             <version>3.1.2</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>
+
         </dependency>
 
         <dependency>
@@ -155,8 +180,7 @@
     </dependencies>
 
     <build>
-        <finalName>${artifactId}-${version}</finalName>
-        <!--<finalName>${artifactId}</finalName>-->
+        <finalName>${project.artifactId}-${project.version}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -215,7 +239,7 @@
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.xlenc.party.credential.CredentialRestService</mainClass>
+                                    <mainClass>com.xlenc.party.credential.CredentialServer</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
@@ -224,5 +248,10 @@
             </plugin>
         </plugins>
     </build>
-
+    <repositories>
+        <repository>
+            <id>morphia</id>
+            <url>http://morphia.googlecode.com/svn/mavenrepo/</url>
+        </repository>
+    </repositories>
 </project>

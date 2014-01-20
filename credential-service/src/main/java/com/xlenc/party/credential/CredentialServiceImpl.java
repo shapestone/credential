@@ -14,7 +14,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 public class CredentialServiceImpl implements CredentialService {
 
-    private static final Logger LOGGER = getLogger(CredentialServiceImpl.class);
+    private static final Logger LOG = getLogger(CredentialServiceImpl.class);
 
     private CredentialPersistence credentialPersistence;
 
@@ -24,6 +24,9 @@ public class CredentialServiceImpl implements CredentialService {
 
     @Override
     public boolean authenticate(CredentialData credential) {
+
+        LOG.debug("Credential: {}", credential.toString());
+
         notNull(credential, "Parameter \"credential\" cannot be null");
 
         final String username = credential.getUsername();
@@ -45,13 +48,18 @@ public class CredentialServiceImpl implements CredentialService {
 
     @Override
     public CredentialData add(CredentialData credential) {
+
+        LOG.debug("Credential: {}", credential.toString());
+
         notNull(credential, "Parameter \"credential\" cannot be null");
 
         final String username = credential.getUsername();
+        LOG.debug("username: {}", username);
         notNull(username, "Username cannot be null.");
         notEmpty(username, "Username cannot be empty.");
 
         final String password = credential.getPassword();
+        LOG.debug("password: {}", password);
         notNull(password, "Password cannot be null.");
         notEmpty(password, "Username cannot be empty.");
 
@@ -60,9 +68,9 @@ public class CredentialServiceImpl implements CredentialService {
             final String hashPwd = BCrypt.hashpw(password, BCrypt.gensalt());
             credential.setHashedPassword(hashPwd);
 
-            newCredential = credentialPersistence.add(credential);
+            newCredential = credentialPersistence.addCredential(credential);
         } catch (Exception e) {
-            LOGGER.error("Exception Caught: ", e);
+            LOG.error("Exception Caught: ", e);
         } finally {
             if (newCredential != null) {
                 newCredential.setHashedPassword(null);
@@ -73,18 +81,34 @@ public class CredentialServiceImpl implements CredentialService {
         return newCredential;
     }
 
-    public int updateById(CredentialData credential) {
+    @Override
+    public int updateCredential(CredentialData credential) {
+
+        LOG.debug("Credential: {}", credential.toString());
+
         notNull(credential, "Parameter \"credential\" cannot be null");
 
         final String username = credential.getUsername();
+        LOG.debug("username: {}", username);
         notNull(username, "Username cannot be null.");
         notEmpty(username, "Username cannot be empty.");
 
         final String password = credential.getPassword();
+        LOG.debug("password: {}", password);
         notNull(password, "Password cannot be null.");
         notEmpty(password, "Username cannot be empty.");
 
-        throw new UnsupportedOperationException();
+        Integer newCredential = 0;
+        try {
+            final String hashPwd = BCrypt.hashpw(password, BCrypt.gensalt());
+            credential.setHashedPassword(hashPwd);
+
+            newCredential = credentialPersistence.updateCredential(credential);
+        } catch (Exception e) {
+            LOG.error("Exception Caught: ", e);
+        }
+
+        return newCredential;
     }
 
     @Override
@@ -102,8 +126,12 @@ public class CredentialServiceImpl implements CredentialService {
     }
 
     @Override
-    public CredentialData changePassword(CredentialData credential) {
-        return add(credential);
+    public CredentialData findByExternalKeyValue(String name, String id) {
+        final CredentialData credentialData;
+        credentialData = credentialPersistence.findByExternalKeyValue(name, id);
+        // The hashed password should never be returned.
+        credentialData.setHashedPassword("");
+        return credentialData;
     }
 
     @Override
