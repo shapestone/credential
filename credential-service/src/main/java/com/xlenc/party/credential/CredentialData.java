@@ -2,6 +2,7 @@ package com.xlenc.party.credential;
 
 import com.google.code.morphia.annotations.*;
 import lombok.Data;
+import lombok.ToString;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
  * Time: 9:52 PM
  */
 @Entity("credentials")
+@ToString
 public @Data
 class CredentialData {
 

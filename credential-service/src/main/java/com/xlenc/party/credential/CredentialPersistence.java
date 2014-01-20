@@ -8,12 +8,16 @@ package com.xlenc.party.credential;
  */
 public interface CredentialPersistence {
 
-    CredentialData add(CredentialData credential);
+    CredentialData addCredential(CredentialData credential);
 
     CredentialData findByUsername(String username);
 
     CredentialData findById(String id);
 
     int delete(String id);
+
+    CredentialData findByExternalKeyValue(String name, String id);
+
+    int updateCredential(CredentialData credential);
 
 }

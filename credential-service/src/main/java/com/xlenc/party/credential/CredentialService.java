@@ -17,5 +17,7 @@ public interface CredentialService {
 
     int delete(String id);
 
-    CredentialData changePassword(CredentialData credential);
+    CredentialData findByExternalKeyValue(String name, String id);
+
+    int updateCredential(CredentialData credential);
 }

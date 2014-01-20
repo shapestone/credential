@@ -96,7 +96,7 @@ public class CredentialServiceTest {
     public void testAddCredential() {
         final CredentialData credential = new CredentialData("mwilliams", "mwilliams");
 
-        when(credentialPersistence.add(any(CredentialData.class))).thenReturn(credential);
+        when(credentialPersistence.addCredential(any(CredentialData.class))).thenReturn(credential);
 
         final CredentialData add = credentialService.add(credential);
 
